@@ -1,0 +1,119 @@
+<html>
+
+<head>
+  <title>Change Color and Filter</title>
+
+	<!-- Dependencies -->
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+  <script src="http://XYZ YOUR ZOOMDATA SERVER HERE/zoomdata/sdk/2.0/zoomdata-client.js"></script>
+  <link rel="stylesheet" type="text/css" href="simplesample.css" />
+</head>
+
+
+
+<body>
+
+	<!-- The JS code for the visualization specifies that it
+	render on the HTML element with id='visualization'.-->
+  <div>
+    <h1>Lorem zoomium zipium</h1>
+      <div id="visualization" style="width: 400px; height:400px; float:left; padding:10px; top:20%">
+      <div style="top:90%"><input id="changeColor" type="submit" value="Change Color" />  <input id="changeFilter" type="submit" value="Change Filter" /></div>
+      <div style="top:90%"></div>
+      </div>
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin facilisis accumsan tincidunt. Mauris mauris ligula, faucibus vitae placerat a, faucibus elementum mi. Donec mi arcu, venenatis non accumsan at, hendrerit a elit. Proin eget felis ac metus cursus sagittis a in dui. Pellentesque at accumsan lorem. Vestibulum quis tincidunt orci. Curabitur nec lacus id erat volutpat vestibulum a vitae lacus. Ut vitae ornare neque. Curabitur ex sem, semper at urna non, gravida consequat nibh. Aliquam iaculis nunc nec sem eleifend posuere. Maecenas fringilla gravida libero, sit amet feugiat mi pharetra non. Fusce sodales posuere ante sed varius. Cras ex diam, tincidunt a commodo vel, varius eget purus. Donec vitae efficitur ligula. Nullam nec porttitor nibh. Donec in nulla eget enim aliquam tincidunt.</p>
+    <p>Integer feugiat rutrum tortor in dictum. Donec mi ante, posuere vel lorem elementum, rutrum efficitur diam. Curabitur pharetra semper sapien id lobortis. Nulla quis auctor dui. Vestibulum sed est tristique purus viverra faucibus. Donec sagittis tincidunt ex, et auctor lacus elementum nec. Fusce sagittis purus non purus faucibus laoreet. Donec porta lacinia mi, vitae commodo tortor egestas in.</p>
+    <p>Nulla vulputate risus egestas libero bibendum interdum. Cras vestibulum ipsum vel elit rhoncus tempus. Fusce vitae orci lobortis, auctor est nec, ultrices lectus. Donec ligula leo, finibus nec fermentum ac, efficitur ut mi. Praesent vitae orci fermentum risus fringilla malesuada imperdiet at libero. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vestibulum sed ultrices turpis. Maecenas ultrices gravida condimentum. Fusce quis risus ullamcorper, imperdiet tellus at, bibendum tortor. Vestibulum sed feugiat lorem, sed viverra ipsum. Nunc congue lectus in ligula mattis, nec mollis turpis suscipit. Quisque molestie turpis sed rhoncus tincidunt. Suspendisse ut vehicula diam.</p>
+    <p>Nam cursus rutrum sollicitudin. Fusce ut porttitor lacus, ac egestas magna. Suspendisse rutrum lectus tristique quam consequat consectetur. Curabitur mi mi, hendrerit ac gravida id, tempor vitae enim. Vestibulum porta, tortor ac tristique efficitur, ex purus tincidunt orci, ac dapibus metus massa sit amet purus. Donec elementum id ipsum et malesuada. Sed nec cursus velit. Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+  </div>
+
+	<script type="text/javascript">
+
+		// Application parameters
+    var filterNum = 0;
+    var filterSet = [
+        {
+            operation: 'IN',
+            path: 'group',
+            value: ['Women', 'Men']
+        },
+        {
+            operation: 'NOTIN',
+            path: 'group',
+            value: ['Women', 'Men']
+        },
+        {
+          operation: 'IN',
+          path: 'group',
+          value: ['Men', 'Electronics', 'Jewelry']
+        },
+        {
+          operation: 'NOTIN',
+          path: 'group',
+          value: ['Men', 'Electronics', 'Jewelry']
+        }
+    ];
+
+    var appColorCtr = 0;
+    var appColors = ["ZoomPalette", "YlGn", "Purples", "Reds", "Oranges", "Blues", "Greys"];
+
+    var application = {
+      secure: XYZ - YOUR SECURITY SETTING HERE,   // boolean - use HTTPS?
+      host: 'XYZ - YOUR URL HERE',			          // must be updated to developer.zoomdata...
+      port: XYZ - YOUR PORT HERE,              		// 8080, 8443, 443 are common settings
+      path: '/zoomdata'
+    };
+
+		// Query configuration parameters
+    var queryConfig = {
+                tz: 'UTC',
+                filters: [filterSet[filterNum]],
+    };
+
+		// Security parameters
+    var credentials = {
+        key: "XYZ - YOUR SECURITY KEY HERE"
+    };
+
+		// Visualization location
+		var vizLocation = document.getElementById('visualization');
+
+    ZoomdataSDK.createClient({											// create the client
+                    credentials: credentials,
+                    application: application
+                })
+                .then(function(client) {
+                  window.client = client;
+                  return(client);
+                })
+                .then(function(client) { // assign the client to a
+                  client.visualize({
+                    element: vizLocation, // html element to hold visualization
+                    config: queryConfig, // requires either a query
+                    source: 'Real Time Sales', // or a query config and source
+                    visualization: 'Packed Bubbles',
+                    variables: {
+                         'Size': 'count',
+                         'Group By': '{"name":"group","limit":10,"sort":{"name":"count","dir":"desc"},"groupColorSet":"ZoomPalette","autoShowColorLegend":true,"colorLegendPosition":"{\\"top\\":\\"auto\\",\\"left\\":\\"auto\\",\\"bottom\\":20,\\"right\\":9.53125}","groupColors":{"Parrot":"#000000"}}'
+                       }
+                 })
+                 .done(function(result) {
+                   window.viz = result;
+                 });
+               });
+
+               $('#changeColor').on('click', function() {
+                    appColorCtr = (appColorCtr+1) % appColors.length;
+                    window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]); //["Bubble Color"]["_colorSettings"]["colorSet"] = appColors[appColorCtr];
+                });
+
+                $('#changeFilter').on('click', function() {
+                    window.viz.filters.remove(filterSet[filterNum]);
+                    filterNum = (filterNum+1) % filterSet.length;
+                    window.viz.filters.add(filterSet[filterNum]);
+                });
+
+	</script>
+
+</body>
+</html>
