@@ -35,19 +35,27 @@
 
 	<!-- The JS code for the visualization specifies that it
 	render on the HTML element with id='visualization'.-->
-	<script type="text/javascript">
+  <!-- The JS code for the visualization specifies that it
+  render on the HTML element with id='visualization'.-->
+  
+  <script type="text/javascript">
 
-		// Application parameters
-		var application = {
-      secure: XYZ - YOUR SECURITY SETTING HERE,   // boolean - use HTTPS?
-      host: 'XYZ - YOUR URL HERE',			          // must be updated to developer.zoomdata...
-      port: XYZ - YOUR PORT HERE,              		// 8080, 8443, 443 are common settings
+  // Application configuration settings
+  // secure: a boolean value, with true indicating
+  //    HTTPS should be used; false indicates HTTP
+  // host: the URL of the Zoomdata server
+  // port: the port used by the Zoomdata server
+  // path: extension used by the Zoomdata server
+  var applicationConfig = {
+      secure: false,   // boolean - use HTTPS?
+      host: '10.2.2.70',                // must be updated to developer.zoomdata...
+      port: 8080,                 // 8080, 8443, 443 are common settings
       path: '/zoomdata'
       };
 
-		// Security parameters
-    var credentials = {
-      key: "XYZ - YOUR SECURITY KEY HERE"
+    // Security parameters
+    var credentialsConfig = {
+      key: "56dcce3fe4b0351def4b84df"
     };
 
     // Query configuration parameters
@@ -80,47 +88,36 @@
         }]
      }
 
-    ZoomdataSDK.createClient({											// create the client
-                    credentials: credentials,
-                    application: application
+      // Create the client
+      ZoomdataSDK.createClient({                      
+                    credentials: credentialsConfig,
+                    application: applicationConfig
                 })
+                // Create the query
                 .then( function(client) {
                         window.client = client;
-                        return( client.createQuery('Real Time Sales', queryConfig) );						        	    // manipulation
+                        return( client.createQuery('Real Time Sales', queryConfig) );
                 })
                 .then( function (result) {
-                  	console.log( result );   // Open the debugging console to see your query object
-                    return window.client.run(result);
-                    /* You can also try window.client.runQuery(result, function(data) {
-                      console.log(data);
-                    }); */
+                  // Run the query and output the values
+                    return window.client.runQuery( result, function(queryData) {
+                      console.log(queryData);
+                      var numDatas = queryData.length;
+                      var ctr;
+                      var $newRow;
+                      for (ctr=0; ctr<numDatas; ctr++) {
+                        $newRow = $( "<tr><td>" + queryData[ctr].group[0] + "</td><td>$" + (queryData[ctr].current.metrics.price.avg).toFixed(2) + "</td></tr>" );
+                        $( "#dataContents" ).append( $newRow );
+                      }
+
+                      // Apply pretty formatting to the table
+                      $('#presentation').DataTable();
+                    });
                 })
-                .then( function(thread) {             // using a run w/ a thread has advantages:
-                  console.log( thread );              // you can listen to events like 'done transmitting now'
-                  thread.on('thread:message', function(data) {
-                    output(data);
-                  })
-                  thread.on('thread:notDirtyData', function(data) {   // notdirtydata event == query is complete
-                    console.log("Done with the Data");
-                  })
-                })
-                .catch( function (error) {             // The client library returns user friendly error messages
+                .catch( function (error) {
+                  // The client library returns user friendly error messages
                   console.log( "Error: " + error );
-                })
-
-
-
-    function output(queryData) {
-      console.log(queryData);
-      var numDatas = queryData.length;
-      var ctr;
-      var $newRow;
-      for (ctr=0; ctr<numDatas; ctr++) {
-        $newRow = $( "<tr><td>" + queryData[ctr].group[0] + "</td><td>$" + queryData[ctr].current.metrics.price.avg + "</td></tr>" );
-        $( "#dataContents" ).append( $newRow );
-      }
-      $('#presentation').DataTable();
-    }
+                });
 
 </script>
 
