@@ -29,7 +29,8 @@
 
 	<script type="text/javascript">
 
-		// Application parameters
+		// Set up the filters that the changeFilter button
+    // will rotate through
     var filterNum = 0;
     var filterSet = [
         {
@@ -54,13 +55,22 @@
         }
     ];
 
+    // Set up the colors that the changeColor button
+    // will rotate through
     var appColorCtr = 0;
     var appColors = ["ZoomPalette", "YlGn", "Purples", "Reds", "Oranges", "Blues", "Greys"];
 
-    var application = {
-      secure: XYZ - YOUR SECURITY SETTING HERE,   // boolean - use HTTPS?
-      host: 'XYZ - YOUR URL HERE',			          // must be updated to developer.zoomdata...
-      port: XYZ - YOUR PORT HERE,              		// 8080, 8443, 443 are common settings
+
+    // Application configuration settings
+    // secure: a boolean value, with true indicating
+    //    HTTPS should be used; false indicates HTTP
+    // host: the URL of the Zoomdata server
+    // port: the port used by the Zoomdata server
+    // path: extension used by the Zoomdata server
+    var applicationConfig = {
+      secure: XYZ - YOUR SECURITY SETTING HERE,
+      host: 'XYZ - YOUR URL HERE',
+      port: XYZ - YOUR PORT HERE,
       path: '/zoomdata'
     };
 
@@ -71,26 +81,35 @@
     };
 
 		// Security parameters
-    var credentials = {
+    var credentialsConfig = {
         key: "XYZ - YOUR SECURITY KEY HERE"
     };
 
 		// Visualization location
 		var vizLocation = document.getElementById('visualization');
 
-    ZoomdataSDK.createClient({											// create the client
-                    credentials: credentials,
-                    application: application
+    ZoomdataSDK.createClient({
+                    credentials: credentialsConfig,
+                    application: applicationConfig
                 })
                 .then(function(client) {
                   window.client = client;
                   return(client);
                 })
-                .then(function(client) { // assign the client to a
+                .then( function(client) {
+                  // client.visualize generates the visualization
+                  // element: the HTML element to which the
+                  //    visualization is linked
+                  // config: query configuration
+                  // source: data source
+                  // visualization: the chart template to use for the
+                  //    visualization
+                  // variables: each variable is a value or a string-
+                  //    encoded JSON object
                   client.visualize({
-                    element: vizLocation, // html element to hold visualization
-                    config: queryConfig, // requires either a query
-                    source: 'Real Time Sales', // or a query config and source
+                    element: vizLocation,
+                    config: queryConfig,
+                    source: 'Real Time Sales',
                     visualization: 'Packed Bubbles',
                     variables: {
                          'Size': 'count',
@@ -102,11 +121,15 @@
                  });
                });
 
+               // event handler rotates the chart through color palettes
+               // when its button is clicked
                $('#changeColor').on('click', function() {
                     appColorCtr = (appColorCtr+1) % appColors.length;
                     window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]); //["Bubble Color"]["_colorSettings"]["colorSet"] = appColors[appColorCtr];
                 });
 
+                // event handler rotates the chart through filters when
+                // its button is clicked
                 $('#changeFilter').on('click', function() {
                     window.viz.filters.remove(filterSet[filterNum]);
                     filterNum = (filterNum+1) % filterSet.length;
