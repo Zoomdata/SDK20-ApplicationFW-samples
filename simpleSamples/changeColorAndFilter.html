@@ -125,7 +125,7 @@
                // when its button is clicked
                $('#changeColor').on('click', function() {
                     appColorCtr = (appColorCtr+1) % appColors.length;
-                    window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]); //["Bubble Color"]["_colorSettings"]["colorSet"] = appColors[appColorCtr];
+                    window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]);
                 });
 
                 // event handler rotates the chart through filters when
