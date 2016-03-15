@@ -94,7 +94,7 @@
                 // Create the query
                 .then( function(client) {
                         window.client = client;
-                        return( client.createQuery('Real Time Sales', queryConfig) );
+                        return( client.createQuery({name: 'Real Time Sales'}, queryConfig) );
                 })
                 .then( function (result) {
                   // Run the query and output the values
