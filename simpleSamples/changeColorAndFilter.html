@@ -75,10 +75,10 @@
     // port: the port used by the Zoomdata server
     // path: extension used by the Zoomdata server
     var applicationConfig = {
-      secure: XYZ - YOUR SECURITY SETTING HERE,
-      host: 'XYZ - YOUR URL HERE',
-      port: XYZ - YOUR PORT HERE,
-      path: '/zoomdata'
+    	secure: true,                        //  - YOUR SECURITY SETTING HERE
+    	host: 'developer.zoomdata.com',      //  - YOUR URL HERE
+    	port: 443,                           //  - YOUR PORT HERE
+    	path: '/zoomdata'
     };
 
 		// Query configuration parameters
@@ -89,11 +89,11 @@
 
 		// Security parameters
     var credentialsConfig = {
-        key: "XYZ - YOUR SECURITY KEY HERE"
+        key: "57470d3ce4b07b98bab99dc0"       // - YOUR SECURITY KEY HERE
     };
 
-		// Visualization location
-		var vizLocation = document.getElementById('visualization');
+    // Visualization location
+    var vizLocation = document.getElementById('visualization');
 
     ZoomdataSDK.createClient({
                     credentials: credentialsConfig,
