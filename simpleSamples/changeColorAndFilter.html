@@ -16,133 +16,124 @@
 	<!-- The JS code for the visualization specifies that it
 	render on the HTML element with id='visualization'.-->
   <div>
- <h1>Lorem zoomium zipium</h1>
+<h1>Lorem zoomium zipium</h1>
 
 <div style="display:inline-block">
-  <div id="visualization" style="width: 300px; height:300px; padding:10px; top:20%; float:left">
+  <div id="visualization" style="width: 400px; height:400px; padding:10px; top:20%; float:left">
     <div style="top:90%">
       <input id="changeColor" type="submit" value="Change Color" />
       <input id="changeFilter" type="submit" value="Change Filter" />
     </div>
   </div>
-  <img src="http://www.zoomdata.com/sites/default/files/textWireframe-300x300.png" />
 </div>
 
 <div style="display:inline-block">
-  <img style="margin-right:15px" src="http://www.zoomdata.com/sites/default/files/textWireframe-300x300.png" />
-  <img src="http://www.zoomdata.com/sites/default/files/textWireframe-300x300.png" />
-</div>
 </div>
 
-	<script type="text/javascript">
 
-		// Set up the filters that the changeFilter button
-    // will rotate through
-    var filterNum = 0;
-    var filterSet = [
-        {
-            operation: 'IN',
-            path: 'group',
-            value: ['Women', 'Men']
-        },
-        {
-            operation: 'NOTIN',
-            path: 'group',
-            value: ['Women', 'Men']
-        },
-        {
-          operation: 'IN',
-          path: 'group',
-          value: ['Men', 'Electronics', 'Jewelry']
-        },
-        {
-          operation: 'NOTIN',
-          path: 'group',
-          value: ['Men', 'Electronics', 'Jewelry']
-        }
-    ];
+<script type="text/javascript">
+// Embedded visualization - change color and filter
+// This example feeds a running query to client,
+// rather than feeding it a query config object
 
-    // Set up the colors that the changeColor button
-    // will rotate through
-    var appColorCtr = 0;
-    var appColors = ["ZoomPalette", "YlGn", "Purples", "Reds", "Oranges", "Blues", "Greys"];
+var filterNum = 0;
+var filterSet = [{
+  operation: 'IN',
+  path: 'group',
+  value: ['Women', 'Men']
+}, {
+  operation: 'NOTIN',
+  path: 'group',
+  value: ['Women', 'Men']
+}, {
+  operation: 'IN',
+  path: 'group',
+  value: ['Men', 'Electronics', 'Jewelry']
+}, {
+  operation: 'NOTIN',
+  path: 'group',
+  value: ['Men', 'Electronics', 'Jewelry']
+}];
 
+var appColorCtr = 0;
+var appColors = ["ZoomPalette", "YlGn", "Purples", "Reds", "Oranges", "Blues", "Greys"];
 
-    // Application configuration settings
-    // secure: a boolean value, with true indicating
-    //    HTTPS should be used; false indicates HTTP
-    // host: the URL of the Zoomdata server
-    // port: the port used by the Zoomdata server
-    // path: extension used by the Zoomdata server
-    var applicationConfig = {
-    	secure: true,                        //  - YOUR SECURITY SETTING HERE
-    	host: 'developer.zoomdata.com',      //  - YOUR URL HERE
-    	port: 443,                           //  - YOUR PORT HERE
-    	path: '/zoomdata'
-    };
+var application = {
+  secure: true,
+  host: 'developer.zoomdata.com',
+  port: 443, //8443
+  path: '/zoomdata'
+};
 
-		// Query configuration parameters
-    var queryConfig = {
-                tz: 'UTC',
-                filters: [filterSet[filterNum]],
-    };
+// Security parameters
+var credentials = {
+  key: "57470d3ce4b07b98bab99dc0"
+};
 
-		// Security parameters
-    var credentialsConfig = {
-        key: "57470d3ce4b07b98bab99dc0"       // - YOUR SECURITY KEY HERE
-    };
+// Query configuration parameters
+var queryConfig = {
+  tz: 'EST',
+  player: {
+    speed: 1,
+    pauseAfterRead: true,
+    timeWindowScale: 'ROLLING'
+  },
+  time: {
+    timeField: '_ts'
+  },
+  filters: [filterSet[filterNum]],
+  groups: [{
+    name: 'usercity',
+    limit: 40,
+    sort: {
+      dir: 'asc',
+      name: 'count'
+    }
+  }],
+  metrics: [{
+    name: 'price',
+    func: 'avg'
+  }]
+}
 
-    // Visualization location
-    var vizLocation = document.getElementById('visualization');
+// Visualization location
+var vizLocation = document.getElementById('visualization');
 
-    ZoomdataSDK.createClient({
-                    credentials: credentialsConfig,
-                    application: applicationConfig
-                })
-                .then(function(client) {
-                  window.client = client;
-                  return(client);
-                })
-                .then( function(client) {
-                  // client.visualize generates the visualization
-                  // element: the HTML element to which the
-                  //    visualization is linked
-                  // config: query configuration
-                  // source: data source
-                  // visualization: the chart template to use for the
-                  //    visualization
-                  // variables: each variable is a value or a string-
-                  //    encoded JSON object
-                  client.visualize({
-                    element: vizLocation,
-                    config: queryConfig,
-                    source: {name: 'Real Time Sales'},
-                    visualization: 'Packed Bubbles',
-                    variables: {
-                         'Size': 'count',
-                         'Group By': '{"name":"group","limit":10,"sort":{"name":"count","dir":"desc"},"groupColorSet":"ZoomPalette","autoShowColorLegend":true,"colorLegendPosition":"{\\"top\\":\\"auto\\",\\"left\\":\\"auto\\",\\"bottom\\":20,\\"right\\":9.53125}","groupColors":{"Parrot":"#000000"}}'
-                       }
-                 })
-                 .done(function(result) {
-                   window.viz = result;
-                 });
-               });
+// create the client
+ZoomdataSDK.createClient({
+    credentials: credentials,
+    application: application
+  })
+  .then(function(client) {
+    window.client = client;
+  	return client.createQuery({name: 'Real Time Sales'}, queryConfig);
+  })
+  .then(function(theQuery) {
+    window.client.visualize({
+        // html element to hold visualization
+        element: vizLocation,
+        // requires either a query
+        // or a query config and source object
+        query: theQuery,
+        visualization: 'Packed Bubbles',
+        variables: {}
+      })
+      .done(function(result) {
+        window.viz = result;
+      });
+  });
 
-               // event handler rotates the chart through color palettes
-               // when its button is clicked
-               $('#changeColor').on('click', function() {
-                    appColorCtr = (appColorCtr+1) % appColors.length;
-                    window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]);
-                });
+$('#changeColor').on('click', function() {
+  appColorCtr = (appColorCtr + 1) % appColors.length;
+  window.viz["dataAccessors"]["Bubble Color"].setColorSet(appColors[appColorCtr]);
+});
 
-                // event handler rotates the chart through filters when
-                // its button is clicked
-                $('#changeFilter').on('click', function() {
-                    filterNum = (filterNum+1) % filterSet.length;
-                    window.viz.filters.add(filterSet[filterNum]);
-                });
+$('#changeFilter').on('click', function() {
+  filterNum = (filterNum + 1) % filterSet.length;
+  window.viz.filters.add(filterSet[filterNum]);
+});
 
-	</script>
+</script>
 
 </body>
 </html>
