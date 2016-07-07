@@ -20,13 +20,14 @@
   <table class='dataTable' id='presentation' style='font-size:10pt'>
       <thead style='text-align:left;'>
         <tr>
-          <th>City</th><th>Average Price</th>
+          <th>Product Group</th>
+          <th>Gender</th>
+          <th>Average Price</th>
         </tr>
       </thead>
-                          <!--JS will insert data into dataContents-->
+      <!--JS will insert data into dataContents-->
       <tbody id='dataContents'>
       </tbody>
-    </table>
   </table>
 </div>
 
@@ -67,14 +68,21 @@
        filters: [{
          path: 'price',
          operation: 'BETWEEN',
-         value: [0,5]
+         value: [50, 100]
        }],
        groups: [{
-         name: 'usercity',
+         name: 'group',
          limit: 200,
          sort: {
            dir: 'asc',
-           name: 'usercity'
+           name: 'price'
+         }
+       }, {
+         name: 'usergender',
+         limit: 200,
+         sort: {
+             dir: 'asc',
+           name: 'price'
          }
        }],
        metrics: [{
@@ -101,7 +109,7 @@
                       var ctr;
                       var $newRow;
                       for (ctr=0; ctr<numDatas; ctr++) {
-                        $newRow = $( "<tr><td>" + queryData[ctr].group[0] + "</td><td>$" + (queryData[ctr].current.metrics.price.avg).toFixed(2) + "</td></tr>" );
+                        $newRow = $("<tr><td>" + queryData[ctr].group[0] + "</td><td>" + queryData[ctr].group[1] + "</td><td>$" + (queryData[ctr].current.metrics.price.avg).toFixed(2) + "</td></tr>");                        
                         $( "#dataContents" ).append( $newRow );
                       }
 
