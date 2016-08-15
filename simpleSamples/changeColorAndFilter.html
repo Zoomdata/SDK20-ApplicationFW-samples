@@ -86,6 +86,8 @@ var queryConfig = {
     sort: {
       dir: 'asc',
       name: 'usercity'	// This was formerly 'count'
+      // The Query API released with v2.2 could sort groups by their name but not by a metric value.
+      // A previous example incorrectly showed groups sorted by metric value.
     }
   }],
   metrics: [{
