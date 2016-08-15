@@ -73,25 +73,25 @@
       value: [50, 100]
     }],
     groups: [{
-      name: 'group',
-      limit: 200,
-      sort: {
-        dir: 'asc',
-        name: 'price'
-      }
+    	name: 'group',
+    	limit: 200,
+    	sort: {
+    		dir: 'asc',
+    		name: 'group'
+    	}
     }, {
-      name: 'usergender',
-      limit: 200,
-      sort: {
-        dir: 'asc',
-        name: 'price'
-      }
+    	name: 'usergender',
+    	limit: 200,
+    	sort: {
+    		dir: 'desc',
+    		name: 'usergender'
+    	}
     }],
     metrics: [{
-      name: 'price',
-      func: 'avg'
+    	name: 'price',
+    	func: 'avg'
     }]
-  }
+  };
 
   // Create the client
   ZoomdataSDK.createClient({
