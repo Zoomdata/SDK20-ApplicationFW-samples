@@ -4,7 +4,7 @@ This directory contains a set of HTML files, each demonstrating functions availa
 
 ## What's In The Box?
 
-### changeColorAndFilter.html
+### changeColorAndFilter-22-23-24.html
 The sample demonstrates the following:
 * Embedding a visualization
 * Using HTML controls with a visualization
@@ -17,6 +17,18 @@ The sample demonstrates the following:
 * Running a data query with the run() method
 * Using data from a query to build a table
 * Making the table pretty using the [DataTables library](https://www.datatables.net/).
+
+### customColorControls-23.html and -24.html
+The sample demonstrates
+* How to embed a chart in a custom application.
+* How to use dataAccessors to identify the color data accessor, to identify the current colors, to modify the current colors
+The sample will not work with v2.2 unless the chart variables are adjusted.
+
+### customColorControls-24.html
+The sample demonstrates
+* How to embed a chart in a custom application.
+* How to use dataAccessors to identify the color data accessor, to identify the current colors, to modify the current colors
+The sample is the same as customColorControls-23.html except the chart variables have been destringified into regular json objects to comply with Zoomdata's updated API.
 
 ###simplesample.css
 Optional - the CSS used to make the samples pretty

@@ -8,6 +8,7 @@ body {
    width: 80%;
    margin-left: auto;
    margin-right: auto;
+   font-size: 16pt;
 }
 
 table.dataTable {
@@ -16,4 +17,9 @@ table.dataTable {
   clear: both;
   border-collapse: separate;
   border-spacing: 0;
+}
+
+.sampleversion {
+	color: #AA0000;
+  font-size: 1.5em;
 }
