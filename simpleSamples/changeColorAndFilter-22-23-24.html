@@ -27,12 +27,11 @@ This sample shows:
 <h1>Lorem zoomium zipium</h1>
 
 <div style="display:inline-block">
-  <div id="visualization" style="width: 400px; height:400px; padding:10px; top:20%; float:left">
-    <div style="top:90%">
-      <input id="changeColor" type="submit" value="Change Color" />
-      <input id="changeFilter" type="submit" value="Change Filter" />
-    </div>
-  </div>
+	<div style="top:90%">
+		<input id="changeColor" type="submit" value="Change Color" />
+      		<input id="changeFilter" type="submit" value="Change Filter" />
+  	</div>
+  	<div id="visualization" style="width: 400px; height:400px; padding:10px; top:20%; float:left"></div>
 </div>
 
 
@@ -93,7 +92,9 @@ var queryConfig = {
     limit: 40,
     sort: {
       dir: 'asc',
-      name: 'count'
+      name: 'usercity'	// This was formerly 'count'
+      // The Query API released with v2.2 could sort groups by their name but not by a metric value.
+      // A previous example incorrectly showed groups sorted by metric value.
     }
   }],
   metrics: [{

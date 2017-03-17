@@ -5,7 +5,7 @@
 
 	<!-- Dependencies -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-  <script src="http://XYZ YOUR ZOOMDATA SERVER HERE/zoomdata/sdk/2.0/zoomdata-client.js"></script>
+  <script src="http://developer.zoomdata.com/zoomdata/sdk/2.0/zoomdata-client.js"></script>
   <link rel="stylesheet" type="text/css" href="simplesample.css" />
   <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.css"/>
   <script type="text/javascript" src="https://cdn.datatables.net/s/dt/jq-2.1.4,dt-1.10.10/datatables.min.js"></script>
@@ -15,18 +15,19 @@
 
 
 <body>
-
+  <h1 style="font-size: 18pt; text-align:center">Product, Gender, and Revenue</h1>
   <div style='width:50%; font-size:10pt; margin:15px; padding: 5px; border: black solid 1px; margin-left: auto; margin-right: auto'>
   <table class='dataTable' id='presentation' style='font-size:10pt'>
       <thead style='text-align:left;'>
         <tr>
-          <th>City</th><th>Average Price</th>
+          <th>Product Group</th>
+          <th>Gender</th>
+          <th>Average Price</th>
         </tr>
       </thead>
-                          <!--JS will insert data into dataContents-->
+      <!--JS will insert data into dataContents-->
       <tbody id='dataContents'>
       </tbody>
-    </table>
   </table>
 </div>
 
@@ -41,78 +42,88 @@
   // host: the URL of the Zoomdata server
   // port: the port used by the Zoomdata server
   // path: extension used by the Zoomdata server
+
+
   var applicationConfig = {
-      secure: false,   
-      host: 'XYZ - YOUR SERVER URL HERE',                
-      port: XYZ - YOUR SERVER PORT HERE,                 
-      path: 'XYZ - YOUR SERVER PATH HERE'
-      };
+    secure: true,
+    host: 'developer.zoomdata.com',
+    port: 443,
+    path: '/zoomdata'
+  };
 
-    // Security parameters
-    var credentialsConfig = {
-      key: "XYZ - YOUR SECURITY KEY HERE"
-    };
+  // Security parameters
+  var credentialsConfig = {
+    key: "572222b4e4b0ef63180b6420"
+  };
 
-    // Query configuration parameters
-    var queryConfig = {
-       tz: 'EST',
-       player: {
-         speed: 1,
-         pauseAfterRead: true,
-         timeWindowScale: 'ROLLING'
-       },
-       time: {
-         timeField: '_ts'
-       },
-       filters: [{
-         path: 'price',
-         operation: 'BETWEEN',
-         value: [0,5]
-       }],
-       groups: [{
-         name: 'usercity',
-         limit: 200,
-         sort: {
-           dir: 'asc',
-           name: 'usercity'
-         }
-       }],
-       metrics: [{
-         name: 'price',
-         func: 'avg'
-        }]
-     }
+  // Query configuration parameters
+  var queryConfig = {
+    tz: 'EST',
+    player: {
+      speed: 1,
+      pauseAfterRead: true,
+      timeWindowScale: 'ROLLING'
+    },
+    time: {
+      timeField: '_ts'
+    },
+    filters: [{
+      path: 'price',
+      operation: 'BETWEEN',
+      value: [50, 100]
+    }],
+    groups: [{
+    	name: 'group',
+    	limit: 200,
+    	sort: {
+    		dir: 'asc',
+    		name: 'group'
+    	}
+    }, {
+    	name: 'usergender',
+    	limit: 200,
+    	sort: {
+    		dir: 'desc',
+    		name: 'usergender'
+    	}
+    }],
+    metrics: [{
+    	name: 'price',
+    	func: 'avg'
+    }]
+  };
 
-      // Create the client
-      ZoomdataSDK.createClient({                      
-                    credentials: credentialsConfig,
-                    application: applicationConfig
-                })
-                // Create the query
-                .then( function(client) {
-                        window.client = client;
-                        return( client.createQuery({name: 'Real Time Sales'}, queryConfig) );
-                })
-                .then( function (result) {
-                  // Run the query and output the values
-                    return window.client.runQuery( result, function(queryData) {
-                      console.log(queryData);
-                      var numDatas = queryData.length;
-                      var ctr;
-                      var $newRow;
-                      for (ctr=0; ctr<numDatas; ctr++) {
-                        $newRow = $( "<tr><td>" + queryData[ctr].group[0] + "</td><td>$" + (queryData[ctr].current.metrics.price.avg).toFixed(2) + "</td></tr>" );
-                        $( "#dataContents" ).append( $newRow );
-                      }
-
-                      // Apply pretty formatting to the table
-                      $('#presentation').DataTable();
-                    });
-                })
-                .catch( function (error) {
-                  // The client library returns user friendly error messages
-                  console.log( "Error: " + error );
-                });
+  // Create the client
+  ZoomdataSDK.createClient({
+      credentials: credentialsConfig,
+      application: applicationConfig
+    })
+    // Create the query
+    .then(function(client) {
+      window.client = client;
+      return (client.createQuery({
+        name: 'Real Time Sales'
+      }, queryConfig));
+    })
+    .then(function(result) {
+      // Run the query and output the values
+      return window.client.runQuery(result, function(queryData) {
+        console.log(queryData);
+        var numDatas = queryData.length;
+        var ctr;
+        var $newRow;
+        for (ctr = 0; ctr < numDatas; ctr++) {
+          $newRow = $("<tr><td>" + queryData[ctr].group[0] + "</td><td>" + queryData[ctr].group[1] + "</td><td>$" + (queryData[ctr].current.metrics.price.avg).toFixed(2) + "</td></tr>");
+          $("#dataContents").append($newRow);
+        }
+        $('#presentation').DataTable();
+        
+      });
+    })
+    .catch(function(error) {
+      // The client library returns user friendly error messages
+      console.log("Error: " + error);
+    });
 
 </script>
 
