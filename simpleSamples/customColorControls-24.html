@@ -16,7 +16,7 @@ This sample shows:
 
     <!-- Dependencies -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
-    <script src="https://2-4-latest.zoomdata.com/zoomdata/sdk/2.0/zoomdata-client.js"></script>
+    <script src="https://developer.zoomdata.com/zoomdata-2.4/sdk/2.0/zoomdata-client.js"></script>
     <link rel="stylesheet" type="text/css" href="simplesample.css">
 </head>
 
@@ -53,8 +53,8 @@ This sample shows:
 
         var application = {
             secure: true,
-            host: '2-4-latest.zoomdata.com', //XYZ - needs to be updated to developer.zoomdata...
-            port: 443, //8443
+            host: 'developer.zoomdata.com/zoomdata-2.4', //XYZ - needs to be updated to developer.zoomdata...
+            port: 8080, //8443
             path: '/zoomdata'
         };
 
@@ -77,7 +77,7 @@ This sample shows:
 
         // Security parameters
         var credentials = {
-            key: "58c86411e4b0712fa6dc1b8a"
+            key: "58ce71afe4b0967584aee4c4" //"58cd91cae4b086ad28e09e24"
         };
 
         // Visualization location
@@ -98,7 +98,7 @@ This sample shows:
                             element: vizLocation, // html element to hold visualization
                             config: queryConfig, // requires either a query
                             source: {
-                                name: 'onebillion'
+                                name: 'FAA Incident Data'
                             }, // or a query config and source
                             visualization: 'Bars',
 
