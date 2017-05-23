@@ -40,15 +40,9 @@ This sample shows:
     var queryConfig = {
         tz: 'UTC',
         filters: [{
-            "path": "broadphaseofflight",
-            "form": null,
-            "label": "Broad Phase Of Flight",
-            "operation": "IN",
-            "value": [
-                "TAXI",
-                "CLIMB",
-                "DESCENT"
-            ]
+            path: "airportcode",
+            operation: "NOTIN",
+            value: [null,"PVT","NONE"]
         }]
     };
 
@@ -63,13 +57,13 @@ This sample shows:
                 "dir": "desc",
                 "name": "count"
             },
-            "limit": 50,
-            "name": "broadphaseofflight",
-            "label": "Broad Phase Of Flight",
+            "limit": 10,
+            "name": "airportcode",
+            "label": "Airport Code",
             "type": "ATTRIBUTE",
             "groupColorSet": "ZoomSequential",
             "autoShowColorLegend": false,
-            "colorNumb": 3,
+            "colorNumb": 10,
             "autoColor": true,
             "groupColors": {}
         }],
@@ -80,19 +74,9 @@ This sample shows:
         "Bar Color": [{
             "name": "count",
             "colorConfig": {
-                "colorNumb": 3,
+                "colorNumb": 10,
                 "legendType": "palette",
-                "colors": [{
-                    "name": "Color 1",
-                    "color": "#ffc65f"
-                }, {
-                    "name": "Color 2",
-                    "color": "#9eb778"
-                }, {
-                    "name": "Color 3",
-                    "color": "#0096b6"
-                }],
-                "colorSet": "ZoomSequential",
+                "colorSet": "ZoomPalette",
                 "autoShowColorLegend": true,
                 "autoColor": true,
                 "colorPositions": null,
