@@ -25,7 +25,6 @@ This sample shows:
         <div id="visualization" class="widgetContent medium" style="width:70%; height:50%; clear:right; padding:10px; top:20%"></div>
     </div>
     <script type="text/javascript">
-
     var vizLocation = document.getElementById("visualization");
 
     // Application parameters
@@ -42,7 +41,7 @@ This sample shows:
         filters: [{
             path: "airportcode",
             operation: "NOTIN",
-            value: [null,"PVT","NONE"]
+            value: [null, "PVT", "NONE"]
         }]
     };
 
@@ -51,6 +50,9 @@ This sample shows:
         key: "591b4914e4b0190a47ad4aa3" //"58cd91cae4b086ad28e09e24"
     };
 
+    // Variables are different for each kind of chart.
+    // For more information about chart variables, see:
+    // https://www.zoomdata.com/docs/2.5/configuring-charts-with-visualization-variables.html
     var variablesDefault = {
         "Multi Group By": [{
             "sort": {
@@ -98,7 +100,10 @@ This sample shows:
     };
 
 
-    // create the client
+    // Actual embedding statement
+    // Note that then() methods are used to deal with asynchronicity
+
+    // Create the client
     ZoomdataSDK.createClient({
             credentials: credentials,
             application: application
