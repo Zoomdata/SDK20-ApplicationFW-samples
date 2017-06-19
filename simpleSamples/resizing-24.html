@@ -160,11 +160,10 @@ This sample shows:
                     // resized.
                     window.addEventListener("resize", function () {
                         // Call the viz's resize method
-                        window.viz.resize();
-
                         // Display the new size
                         var size = window.viz.element.getBoundingClientRect();
                         $("#showsize").text("DOM element is " + size.width + " x " + size.height);
+                        window.viz.resize(size.width, size.height);
                     });
                 })
                 .catch(function(err) {
