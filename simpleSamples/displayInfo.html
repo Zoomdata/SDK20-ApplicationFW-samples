@@ -1,0 +1,236 @@
+<!--
+Works with Zoomdata v2.4+
+
+This sample shows:
+1. Simple embedded chart in a custom application.
+2. Using chart variables and data accessors to obtain some of the chart's information:
+   - chart title
+   - chart description
+   - grouping / group-by info
+   - metrics info, including height (in this case) and color
+-->
+
+<html>
+
+<head>
+    <title>Chart with Info</title>
+    <!-- Dependencies -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://developer.zoomdata.com/zoomdata-2.5/sdk/2.0/zoomdata-client.js"></script>
+    <link rel="stylesheet" type="text/css" href="simplesample.css">
+</head>
+
+<body>
+    <!-- The JS code for the visualization specifies that it
+    render on the HTML element with id='visualization'.-->
+    <div>
+        <!-- To make the sample work with v2.3, stringify the variables object -->
+        <p id="sampleinfo">This sample works with Zoomdata <span class="sampleversion">v2.4+</span></p>
+        <div id="title" style="text-align: center"></div>
+        <div id="vizplace" style="width: 80%; margin-left: auto; margin-right: auto; position: relative;">
+            <div id="metric" style="display: inline-block; position: absolute; top: 55%; left:-5%"></div>
+            <div id="visualization" class="widgetContent medium" style="display: inline-block;"></div>
+            <div id="legend" style="display: inline-block; position: absolute; top: 25%;">
+                <div id="chartdesc" style="text-align: center"></div>
+                <br/>
+                <div id="colorlegend"></div>
+            </div>
+        </div>
+        <div id="grouping"></div>
+        <script type="text/javascript">
+        var vizLocation = document.getElementById("visualization");
+
+        // Application parameters
+        var application = {
+            secure: true,
+            host: 'developer.zoomdata.com',
+            port: 443,
+            path: '/zoomdata-2.5'
+        };
+
+        // Query configuration parameters
+        var queryConfig = {
+            tz: 'UTC',
+            filters: [{
+                path: "broadphaseofflight",
+                operation: "NOTIN",
+                value: [null, "OTHER", "UNKNOWN"]
+            }]
+        };
+
+        // Security parameters
+        var credentials = {
+            key: "592db4bbe4b0190a47ad4cbb" //"58cd91cae4b086ad28e09e24"
+        };
+
+        // Variables are different for each kind of chart.
+        // For more information about chart variables, see:
+        // https://www.zoomdata.com/docs/2.5/configuring-charts-with-visualization-variables.html
+        var variablesDefault = {
+            "Chart Name": "Title is saved in dashboard or set in chart variables",
+            "Chart Description": "Chart description could come from a saved dashboard or it can be set in the chart variables.",
+            "Multi Group By": [{
+                "sort": {
+                    "dir": "desc",
+                    "name": "count"
+                },
+                "limit": 20,
+                "name": "broadphaseofflight",
+                "label": "Phase of Flight",
+                "type": "ATTRIBUTE",
+                "groupColorSet": "ZoomSequential",
+                "autoShowColorLegend": false,
+                "colorNumb": 10,
+                "autoColor": true,
+                "groupColors": {}
+            }],
+            "Metric": [{
+                "name": "count"
+            }],
+            "Bar Color": [{
+                "name": "totalfatalinjuries",
+                "func": "avg",
+                "colorConfig": {
+                    "colorNumb": 3,
+                    "legendType": "range",
+                    "colors": [{
+                        "name": "Color 0",
+                        "color": "#f01a12"
+                    }, {
+                        "name": "Color 1",
+                        "color": "#fbff00"
+                    }, {
+                        "name": "Color 2",
+                        "color": "#73fb7d"
+                    }],
+                    "autoShowColorLegend": true,
+                    "autoColor": true,
+                    "colorPositions": null,
+                    "colorScaleType": "gradient"
+                }
+            }],
+            "UberBarsSettings": {
+                "showXGrid": true,
+                "showYGrid": true,
+                "chartType": "plain",
+                "chartOrientation": "vertical",
+                "thickness": "100",
+                "showAbsoluteValues": false,
+                "showRelativeValues": false,
+                "showGroupLabels": true,
+                "enableLogScale": false
+            },
+        };
+
+
+        // Actual embedding statement
+        // Note that then() methods are used to deal with asynchronicity
+
+        // Create the client
+        ZoomdataSDK.createClient({
+                credentials: credentials,
+                application: application
+            })
+            .then(function(client) {
+                window.client = client;
+                console.log("client: ", client);
+                return (client);
+            })
+            .then(function(client) {
+                console.log("beginning vis");
+
+                // When that's done, use the client to visualize a chart
+                client.visualize({
+                        element: vizLocation,
+                        config: queryConfig,
+                        source: {
+                            name: 'FAA Incident Data'
+                        },
+                        visualization: 'Bars',
+
+                        // IMPORTANT CHANGE: starting in 2.4, the chart variables
+                        // are no longer stringified json, but just good old json!
+                        // To make the chart work with v2.3, stringify the
+                        // variables object.
+                        variables: variablesDefault
+                    })
+                    .then(function(result) {
+                        window.viz = result;
+                    })
+                    // when done visualizing, add title and other info.
+                    .done(function() {
+                        console.log("viz: ", window.viz);
+
+                        //Chart Title
+                        //getVisualizationName uses the chart variable "Chart Title" if it exists;
+                        //otherwise, it uses the name of the data source
+                        var title = window.viz.getVisualizationName();
+                        $("#title").text(title);
+
+                        //Chart Description
+                        //Get and report chart description information
+                        $("#chartdesc").text(window.viz.variables["Chart Description"]);
+
+
+                        //Grouping info
+                        //Get and report group information
+                        var dimensionAccessors = window.viz.dataAccessors.getDimensionAccessors();
+                        var chartVariable;
+                        for (dim in dimensionAccessors[0]) {
+                            chartVariable = dim;
+                        }
+                        var group = dimensionAccessors[0][chartVariable].getGroups();
+                        $("#grouping").text(group[0].label);
+
+                        //Metrics info - color and in this case height
+                        //Get and report metric information
+                        var metricAccessors = window.viz.dataAccessors.getMetricAccessors()[0];
+                        var colorMetric;
+                        var heightMetric;
+                        //distinguish color metric and height metric
+                        for (var curMetric in metricAccessors) {
+                            if (metricAccessors[curMetric].isColor) {
+                                colorMetric = metricAccessors[curMetric];
+                            } else {
+                                heightMetric = metricAccessors[curMetric];
+                            }
+                        }
+                        $("#metric").text(heightMetric.getLabel());
+                        console.log("heightMetric.getMinDomainValue() = " + heightMetric.getMinDomainValue());
+
+                        var colorList = colorMetric.getColorRange();
+                        var metricForColor = colorMetric.getColorKeyLabel();
+                        $("#colorlegend").text(metricForColor);
+                        $("#colorlegend").append("<br/>");
+                        console.log("colorMetric: ", colorMetric);
+
+                        //There are several different ways that colors are handled.
+                        //Ranges, palettes, etc. We're just going to look at
+                        //ranges, here.
+                        var colorRangeType = colorMetric.getColorRangeType();
+
+                        console.log("window.viz.dataAccessors['Metric'].getMaxDomainValue(): ", window.viz.dataAccessors['Metric'].getMaxDomainValue());
+
+                        if (colorRangeType == "range") {
+                            console.log("colorRangeType: " + colorRangeType);
+                            console.log("heightMetric: ", heightMetric);
+                            
+                            //It takes about 1 second for the values to be populated
+                            setTimeout(function() {
+                                var minVal = heightMetric.getMinDomainValue();
+                                var maxVal = heightMetric.getMaxDomainValue();
+
+                                $("#colorlegend").append("<span style='background-color:" + colorList[0] + "'>From high: " + maxVal + "</span><br/>");
+                                $("#colorlegend").append("<span style='background-color:" + colorList[colorList.length-1] + "'>to low: " + minVal + "</span><br/>");
+                            },1300);
+                        }
+
+                    })
+                    .catch(function(err) {
+                        console.log("Error visualizing: ", err);
+                    });
+            });
+        </script>
+</body>
+
+</html>
