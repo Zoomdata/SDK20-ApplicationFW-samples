@@ -99,7 +99,8 @@ This sample shows:
             .then(function (client) { // assign the client to a
                     console.log("beginning vis");
                     return client.visualize({
-                            element: vizLocation, // html element to hold visualization
+                       	    element: vizLocation, // html element to hold visualization
+        		    interactive: true,
                             config: queryConfig, // requires either a query
                             source: {
                                 name: 'FAA Incident Data'
